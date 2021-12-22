@@ -33,16 +33,24 @@ void wSleep(int sem1_id){
     sleep(1);
 }
 
-int main(int argc , char *argv[]){
+int main(int argc , char *argv[])
+{
     int sem1_id = atoi(argv[1]);
     int check_VZ_1 = atoi(argv[2]);
     int pipe = atoi(argv[3]);
-    char *shm1 = shmat(check_VZ_1,NULL,0);
+
+    char *shm1;
+
+    if ((shm1 = (char*)shmat(check_VZ_1, NULL, 0)) == NULL) {
+        perror("shmat failed");
+        return 1;
+    }
+
     char buffer[151];
     int text;
 
     semSetup(sem1_id,'2');
-    for(int i = 0;i < 10;i++){
+    for (int i = 0;i < 10;i++) {
         text = 0;
         wSleep(sem1_id);
         do{
