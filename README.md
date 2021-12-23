@@ -24,7 +24,8 @@ Parametre hlavného programu sú čísla portov pre servery Serv1 (TCP) a Serv2 
 ~~~~
 proc_pr
 ~~~~
-Funkcia
+**Funkcia**
+
 Proces Pr pošle signál SIGUSR1 svojmu hlavnému procesu (Zadanie) na signalizáciu, že je pripravený. Proces Pr si údaje bude žiadať:
 
 Ak pošle signál (SIGUSR1) procesu P1, nech tento proces (P1) zapíše slovo prečítané zo súboru p1.txt.
@@ -32,22 +33,23 @@ To isté platí aj pre proces P2 a p2.txt. Teda, ak proces Pr pošle signál (SI
 Proces Pr k slovu prijatému z rúry R1 pridá svoju značku a zapíše nové slovo do rúry R2.
 
 
-PROCES S
+**PROCES S**
 
-Spúšťanie
+**Spúšťanie**
 ~~~~
 proc_s
 ~~~~
-Funkcia
+**Funkcia**
+
 Proces S pošle signál SIGUSR1 svojmu hlavnému procesu (Zadanie) na signalizáciu, že je (proces S) pripravený. Proces S príjme slovo zo zdieľanej pamäte SM1 so synchronizáciou semaforom S1 (pozri časť o semaforoch v časti „Popis komunikácie“), pripíše k nemu svoju značku a zapíše ho do zdieľanej pamäte SM2 so synchronizáciou semaforom S2.
 
-PROCES Serv1
+**PROCES Serv1**
 
-Spúšťanie
+**Spúšťanie**
 ~~~~
 proc_serv1 <číslo portu 1> <číslo portu 2>
 ~~~~
-Funkcia
+**Funkcia**
 
 Proces Serv1 vytvorí TCP server (na porte <číslo portu 1>), ktorý bude prijímať TCP pakety. Server prijaté slová označí svojou značkou a pošle ich ďalej na UDP server (port <číslo portu 2>). Čísla portov 1 a 2 sú argumenty hlavného procesu (pozri kapitolu „PROCES Zadanie“). Proces Serv1 pošle signál SIGUSR1 svojmu hlavnému procesu (Zadanie) na signalizáciu, že je (proces Serv1) pripravený. TCP aj UDP server nech vytvorený na lokálnom počítači, teda na počítači „127.0.0.1“ (pozor, nie „localhost“!).
 
