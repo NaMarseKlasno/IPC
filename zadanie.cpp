@@ -62,26 +62,22 @@ int main(int argc, char* argv[])
     }
 
     ////////////////////////////////////////////////////////////////////////////
+    sprintf(buff.for_pipe_3, "%d", pipes.pipefd_1[1]);
+    char *arr_P1[] = {(char*)"proc_p1", buff.for_pipe_3, NULL}, *arr_P2[] = {(char*)"proc_p2", buff.for_pipe_3, NULL};
 
     // ***** create proc_p1 with argv
     if ((P1 = fork()) == -1) {
         perror("fork failed");
         exit(EXIT_FAILURE);
-    } if (P1 == 0) {
-        sprintf(buff.for_pipe_3, "%d", pipes.pipefd_1[1]);
-        char* arr_P1[] = {(char*)"proc_p1", buff.for_pipe_3, NULL};
-        execve("proc_p1", arr_P1, NULL);
-    } sleep(1);
-
+    } if (P1 == 0) execve("proc_p1", arr_P1, NULL);
+    sleep(1);
 
     // ***** create proc_p2 with argv
     if ((P2 = fork()) == -1) {
         perror("fork failed");
         exit(EXIT_FAILURE);
-    } if (P2 == 0) {
-        char* arr_P2[] = {(char*)"proc_p2", buff.for_pipe_3, NULL};
-        execve("proc_p2", arr_P2, NULL);
-    } sleep(1);
+    } if (P2 == 0) execve("proc_p2", arr_P2, NULL);
+    sleep(1);
 
     ////////////////////////////////////////////////////////////////////////////
 
@@ -105,22 +101,20 @@ int main(int argc, char* argv[])
     ////////////////////////////////////////////////////////////////////////////
 
     // ***** create proc serv1 with argv
+    char* arr_SERV1[] = {(char *)"proc_serv1", argv[1], argv[2], NULL};
     if ((Serv1 = fork()) == -1) {
         perror("fork failed");
         exit(EXIT_FAILURE);
-    } else if (Serv1 == 0) {
-        char* arr_SERV1[] = {(char *)"proc_serv1", argv[1], argv[2], NULL};
-        execve("proc_serv1", arr_SERV1,NULL);
-    } sleep(1);
+    } else if (Serv1 == 0) execve("proc_serv1", arr_SERV1,NULL);
+    sleep(1);
 
     // ***** create proc serv2 with argv
+    char* arr_SERV2[] = {(char*)"proc_serv2", argv[2], NULL};
     if ((Serv2 = fork()) == -1) {
         perror("fork failed");
         exit(EXIT_FAILURE);
-    } else if (Serv2 == 0) {
-        char* arr_SERV2[] = {(char*)"proc_serv2", argv[2], NULL};
-        execve("proc_serv2", arr_SERV2,NULL);
-    }
+    } else if (Serv2 == 0) execve("proc_serv2", arr_SERV2,NULL);
+    sleep(1);
 
     ////////////////////////////////////////////////////////////////////////////
 
@@ -128,7 +122,7 @@ int main(int argc, char* argv[])
     key_t key1 = ftok("p1.txt", 1);
 
     // ***** create semaphore (SEM1)
-    if ((buff.SEM1 = semget(key1, 2, IPC_CREAT|0666)) < 0) {
+    if ((buff.SEM1 = semget(key1, 2, IPC_CREAT|0666)) == -1) {
         perror("semget failed");
         exit(EXIT_FAILURE);
     }
@@ -137,7 +131,7 @@ int main(int argc, char* argv[])
     key_t key2 = ftok("p2.txt", 1);
 
     // ***** create semaphore (SEM2)
-    if ((buff.SEM2 = semget(key2, 2, IPC_CREAT|0666)) < 0) {
+    if ((buff.SEM2 = semget(key2, 2, IPC_CREAT|0666)) == -1) {
         perror("semget failed");
         exit(EXIT_FAILURE);
     }
@@ -149,10 +143,10 @@ int main(int argc, char* argv[])
     ////////////////////////////////////////////////////////////////////////////
 
     // ***** create shared memory
-    if ((buff.SHM1 = shmget(key1, 4096, IPC_CREAT|0666)) < 0) {
+    if ((buff.SHM1 = shmget(key1, 4096, IPC_CREAT|0666)) == -1) {
         perror("shmget failed");
         exit(EXIT_FAILURE);
-    } if ((buff.SHM2 = shmget(key2, 4096, IPC_CREAT|0666)) < 0) {
+    } if ((buff.SHM2 = shmget(key2, 4096, IPC_CREAT|0666)) == -1) {
         perror("shmget failed");
         exit(EXIT_FAILURE);
     } fprintf(stdout, "%d\n%d\n", buff.SHM1, buff.SHM2);
@@ -164,35 +158,29 @@ int main(int argc, char* argv[])
     ////////////////////////////////////////////////////////////////////////////
 
     // ***** create proc_t
+    char* arr_PROC_T[] = {(char *)"proc_t", buff.S1_char, buff.SHM1_char, buff.PIPE20, NULL};
     if ((T = fork()) == -1) {
         perror("fork failed");
         exit(EXIT_FAILURE);
-    } else if (T == 0) {
-        char* arr_PROC_T[] = {(char *)"proc_t", buff.S1_char, buff.SHM1_char, buff.PIPE20, NULL};
-        execve("proc_t", arr_PROC_T,NULL);
-    }
+    } else if (T == 0) execve("proc_t", arr_PROC_T,NULL);
 
     ////////////////////////////////////////////////////////////////////////////
 
     // ***** create proc_s
+    char *arr_PROC_S[] = {(char *)"proc_s", buff.SHM1_char, buff.S1_char, buff.SHM2_char, buff.S2_char, NULL};
     if ((S = fork()) == -1) {
         perror("fork failed");
         exit(EXIT_FAILURE);
-    } else if (S == 0) {
-        char *arr_PROC_S[] = {(char *)"proc_s", buff.SHM1_char, buff.S1_char, buff.SHM2_char, buff.S2_char, NULL};
-        execve("proc_s", arr_PROC_S,NULL);
-    }
+    } else if (S == 0) execve("proc_s", arr_PROC_S,NULL);
 
     ////////////////////////////////////////////////////////////////////////////
 
     // ***** create proc_d
+    char *arr_PROC_D[] = {(char *)"proc_d", buff.S2_char, buff.SHM2_char, argv[1], NULL};
     if ((D = fork()) == -1) {
         perror("fork failed");
         exit(EXIT_FAILURE);
-    } else if (D == 0) {
-        char *arr_PROC_D[] = {(char *)"proc_d", buff.S2_char, buff.SHM2_char, argv[1], NULL};
-        execve("proc_d", arr_PROC_D,NULL);
-    }
+    } else if (D == 0) execve("proc_d", arr_PROC_D,NULL);
 
     ////////////////////////////////////////////////////////////////////////////
 
