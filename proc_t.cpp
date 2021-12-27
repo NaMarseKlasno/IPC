@@ -56,7 +56,7 @@ int main(int argc , char *argv[])
         do{
             read(pipe,&buffer[text++],1);
         }while(buffer[text - 1] != '\n');
-        buffer[strlen(buffer)] = '\0';
+        buffer[text - 1] = '\0';
         printf("T:Send word %d %s\n",i,buffer);
         strcpy(shm1, buffer);
         semSetup(sem1_id,'1');
