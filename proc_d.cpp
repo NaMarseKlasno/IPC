@@ -27,9 +27,6 @@ void p_Semafor(int id_Semafor){
     if(error == -1){
         exit(1);
     }
-    else{
-        exit(0);
-    }
 }
 
 void w_Semafor(int id_Semafor){
@@ -41,9 +38,6 @@ void w_Semafor(int id_Semafor){
     error = semop(id_Semafor, &semafaor_buffer_w, 1);
     if(error == -1){
         exit(1);
-    }
-    else{
-        exit(0);
     }
 }
 
@@ -73,7 +67,7 @@ int main(int argc , char *argv[]){
     addr_Server.sin_family = AF_INET;
     addr_Server.sin_port = htons(Server_port1);
 
-    error = inet_pton(AF_INET, "127.0.0.1", &addr_Server.sin_addr);
+    error = inet_pton(AF_INET, "127.0.0.1", &addr_Server.sin_addr.s_addr);
     if(error <= 0){
         printf("\n Address not supported / Invalid address \n");
         return -1;
@@ -95,7 +89,7 @@ int main(int argc , char *argv[]){
         Array[size_Array] = '\0';
         printf("Got word %d %ld %s\n",v,size_Array,Array);
         send(Socket , Array , size_Array+1 , 0 );
-        sleep(10);
+        sleep(2);
         p_Semafor(semafor_2);
         if(10 <= v){
             kill(getppid(),SIGUSR2);
@@ -103,7 +97,5 @@ int main(int argc , char *argv[]){
     }
       return 0;
 }
-
-
 
 
